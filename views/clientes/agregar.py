@@ -106,17 +106,15 @@ class AgregarClienteFrame(ctk.CTkFrame):
             self._limpiar, ancho=180,
         ).grid(row=0, column=1, sticky="ew")
 
-        # Atajo Ctrl+S seguro en CustomTkinter. Se registra en la ventana padre
-        # no en el widget hijo para evitar AttributeError por bind_all().
-        self.winfo_toplevel().bind("<Control-s>", self._on_shortcut_guardar)
+        # El atajo vive solo en los campos del formulario: evita bind_all() de
+        # CustomTkinter y no guarda clientes al estar en otra pestaña.
+        for campo in self._campos.values():
+            campo.bind("<Control-s>", lambda _event: self._guardar())
 
         # Focus inicial
         self._campos["identificacion"].focus()
 
     # ── Lógica ─────────────────────────────────────────────────────────────────
-    def _on_shortcut_guardar(self, event=None) -> None:
-        self._guardar()
-
     def _limpiar(self) -> None:
         for entry in self._campos.values():
             entry.delete(0, "end")

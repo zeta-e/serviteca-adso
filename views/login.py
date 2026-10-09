@@ -17,6 +17,8 @@ class LoginView(ctk.CTk):
 
     def __init__(self):
         super().__init__()
+        COLORES["acento"] = "#e94560"
+        COLORES["acento_hover"] = "#c73652"
         self.title("Serviteca ADSO")
         self.resizable(False, False)
         centrar_ventana(self, 860, 540)

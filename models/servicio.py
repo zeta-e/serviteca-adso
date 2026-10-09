@@ -14,6 +14,7 @@ from config.database import db
 
 def obtener_tipos() -> list[dict]:
     """Devuelve todos los tipos de servicio activos con su precio."""
+    cursor = None
     try:
         cursor = db.get_cursor()
         cursor.execute(
@@ -25,11 +26,12 @@ def obtener_tipos() -> list[dict]:
             """
         )
         return cursor.fetchall()
-    except Error as e:
+    except (Error, ConnectionError, OSError) as e:
         print(f"[Servicio.obtener_tipos] {e}")
         return []
     finally:
-        cursor.close()
+        if cursor is not None:
+            cursor.close()
 
 
 def obtener_tipo_por_nombre(nombre: str) -> dict | None:

@@ -74,6 +74,7 @@ def obtener_todos() -> list[dict]:
 
 def buscar_por_placa(placa: str) -> dict | None:
     """Busca un carro exacto por placa."""
+    cursor = None
     try:
         cursor = db.get_cursor()
         cursor.execute(
@@ -89,11 +90,12 @@ def buscar_por_placa(placa: str) -> dict | None:
             (placa.strip().upper(),),
         )
         return cursor.fetchone()
-    except Error as e:
+    except (Error, ConnectionError, OSError) as e:
         print(f"[Carro.buscar_por_placa] {e}")
         return None
     finally:
-        cursor.close()
+        if cursor is not None:
+            cursor.close()
 
 
 def obtener_por_cliente(id_cliente: int) -> list[dict]:

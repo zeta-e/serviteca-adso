@@ -229,6 +229,9 @@ class MenuPrincipal(ctk.CTk):
         self._lbl_hora_top.grid(
             row=0, column=2, padx=(0, 20), pady=12)
 
+        # Compatibilidad con versiones anteriores que usaban `lbl_hora_top`
+        self.lbl_hora_top = self._lbl_hora_top
+
     # ── Área de contenido ─────────────────────────────────────────────────────
     def _construir_area(self) -> None:
         self._area = ctk.CTkFrame(
@@ -336,9 +339,18 @@ class MenuPrincipal(ctk.CTk):
 
     # ── Reloj ─────────────────────────────────────────────────────────────────
     def _tick(self) -> None:
+        if not self.winfo_exists():
+            return
+
         ahora = datetime.now()
         self._lbl_reloj.configure(
             text=ahora.strftime("📅 %d/%m/%Y\n🕐 %I:%M:%S %p"))
-        self._lbl_hora_top.configure(
-            text=ahora.strftime("%d/%m/%Y  %I:%M %p"))
+
+        hora_widget = getattr(self, "_lbl_hora_top", None)
+        if hora_widget is None:
+            hora_widget = getattr(self, "lbl_hora_top", None)
+        if hora_widget is not None:
+            hora_widget.configure(
+                text=ahora.strftime("%d/%m/%Y  %I:%M %p"))
+
         self.after(1000, self._tick)

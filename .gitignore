@@ -1,0 +1,54 @@
+# ── Python ────────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+.Python
+
+# ── Entornos virtuales ─────────────────────────────────────────────────────────
+venv/
+env/
+.env/
+.venv/
+ENV/
+
+# ── Variables de entorno / secretos ───────────────────────────────────────────
+.env
+*.env
+secrets.py
+config/local_settings.py
+
+# ── IDEs ──────────────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.suo
+*.user
+*.sublime-project
+*.sublime-workspace
+
+# ── Sistema operativo ─────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── Logs y temporales ─────────────────────────────────────────────────────────
+*.log
+*.tmp
+*.bak
+*.swp
+
+# ── Distribución / empaquetado ────────────────────────────────────────────────
+dist/
+build/
+*.egg-info/
+*.egg
+MANIFEST
+
+# ── Base de datos local (no subir datos reales) ───────────────────────────────
+*.sqlite3
+*.db
+
+# ── Exports generados ─────────────────────────────────────────────────────────
+exports/
+*.csv

@@ -21,6 +21,7 @@ def login(username: str, password: str) -> dict | None:
     Verifica credenciales.
     Retorna el dict del usuario si son válidas, None si no.
     """
+    cursor = None
     try:
         cursor = db.get_cursor()
         cursor.execute(
@@ -34,16 +35,18 @@ def login(username: str, password: str) -> dict | None:
             (username.strip(), _hash(password)),
         )
         return cursor.fetchone()   # dict o None
-    except Error as e:
+    except (Error, ConnectionError, OSError) as e:
         print(f"[Usuario.login] {e}")
         return None
     finally:
-        cursor.close()
+        if cursor is not None:
+            cursor.close()
 
 
 # ── CRUD básico ────────────────────────────────────────────────────────────────
 def obtener_todos() -> list[dict]:
     """Devuelve todos los usuarios activos."""
+    cursor = None
     try:
         cursor = db.get_cursor()
         cursor.execute(
@@ -51,11 +54,12 @@ def obtener_todos() -> list[dict]:
             "FROM usuarios WHERE activo = 1 ORDER BY nombre"
         )
         return cursor.fetchall()
-    except Error as e:
+    except (Error, ConnectionError, OSError) as e:
         print(f"[Usuario.obtener_todos] {e}")
         return []
     finally:
-        cursor.close()
+        if cursor is not None:
+            cursor.close()
 
 
 def agregar(username: str, password: str, nombre: str, rol: str = "operario") -> tuple[bool, str]:
@@ -63,6 +67,7 @@ def agregar(username: str, password: str, nombre: str, rol: str = "operario") ->
     Crea un nuevo usuario.
     Retorna (True, 'OK') o (False, 'mensaje de error').
     """
+    cursor = None
     try:
         cursor = db.get_cursor()
         cursor.execute(
@@ -74,17 +79,19 @@ def agregar(username: str, password: str, nombre: str, rol: str = "operario") ->
         )
         db.commit()
         return True, "Usuario creado correctamente."
-    except Error as e:
+    except (Error, ConnectionError, OSError) as e:
         db.rollback()
-        if e.errno == 1062:
+        if isinstance(e, Error) and getattr(e, 'errno', None) == 1062:
             return False, f"El username '{username}' ya existe."
         return False, str(e)
     finally:
-        cursor.close()
+        if cursor is not None:
+            cursor.close()
 
 
 def cambiar_password(id_usuario: int, nueva_password: str) -> tuple[bool, str]:
     """Actualiza la contraseña de un usuario."""
+    cursor = None
     try:
         cursor = db.get_cursor()
         cursor.execute(
@@ -93,8 +100,9 @@ def cambiar_password(id_usuario: int, nueva_password: str) -> tuple[bool, str]:
         )
         db.commit()
         return True, "Contraseña actualizada."
-    except Error as e:
+    except (Error, ConnectionError, OSError) as e:
         db.rollback()
         return False, str(e)
     finally:
-        cursor.close()
+        if cursor is not None:
+            cursor.close()
